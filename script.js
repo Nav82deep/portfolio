@@ -24,17 +24,7 @@
     loaderText.appendChild(span);
   });
 
-  // Phase 2: After 1.2s, letters fall out right-to-left (last letter falls first)
-  setTimeout(() => {
-    const loaderLetters = loaderText.querySelectorAll('.loader-letter');
-    loaderLetters.forEach((span, i) => {
-      const reverseIndex = letterCount - 1 - i;
-      span.style.animationDelay = `${reverseIndex * 0.08}s`;
-      span.classList.add('falling');
-    });
-  }, 1200);
-
-  // Phase 3: Fade loader, hero letters drop in from above (right-to-left)
+  // Phase 2: Fade loader, hero letters drop in from above (right-to-left)
   setTimeout(() => {
     loader.classList.add('done');
     document.body.style.overflow = '';
@@ -236,23 +226,40 @@ document.querySelectorAll('.project-row[data-image]').forEach(row => {
   });
 });
 
-// ── Certificate Hover Preview ────────────────────────────────────
+// ── Certificate Hover Preview (follows cursor, same as project hover) ────
 const certPreview = document.createElement('img');
-certPreview.className = 'cert-preview';
+certPreview.className = 'project-hover-img';
 document.body.appendChild(certPreview);
 
-document.querySelectorAll('.cert-card[data-image]').forEach(card => {
-  const src = card.getAttribute('data-image');
+document.querySelectorAll('.cert-row[data-cert-image]').forEach(row => {
+  const src = row.getAttribute('data-cert-image');
   if (!src) return;
 
-  card.addEventListener('mouseenter', () => {
+  row.addEventListener('mouseenter', () => {
     certPreview.src = src;
     certPreview.classList.add('visible');
   });
-  card.addEventListener('mouseleave', () => certPreview.classList.remove('visible'));
-  card.addEventListener('mousemove', (e) => {
+  row.addEventListener('mouseleave', () => certPreview.classList.remove('visible'));
+  row.addEventListener('mousemove', (e) => {
     certPreview.style.left = (e.clientX + 24) + 'px';
-    certPreview.style.top = (e.clientY - 130) + 'px';
+    certPreview.style.top = (e.clientY - 110) + 'px';
+  });
+});
+
+// ── Mobile Nav Toggle ────────────────────────────────────────────
+const navToggle = document.getElementById('navToggle');
+const navLinksEl = document.getElementById('navLinks');
+
+navToggle.addEventListener('click', () => {
+  navToggle.classList.toggle('open');
+  navLinksEl.classList.toggle('open');
+});
+
+// Close menu when a link is clicked
+navLinksEl.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navToggle.classList.remove('open');
+    navLinksEl.classList.remove('open');
   });
 });
 

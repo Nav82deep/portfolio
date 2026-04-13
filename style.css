@@ -71,16 +71,6 @@ a { color: inherit; text-decoration: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Phase 2: Letters fall out — right-to-left, staggered, matching hero drop style */
-.loader-letter.falling {
-  animation: loaderFall 0.6s cubic-bezier(0.55, 0, 1, 0.45) forwards !important;
-}
-
-@keyframes loaderFall {
-  0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-  30% { opacity: 1; transform: translateY(-10px) scale(1.05) rotate(-2deg); }
-  100% { opacity: 0; transform: translateY(200px) scale(0.9) rotate(5deg); }
-}
 
 /* ── Trippy Cursor (mix-blend-mode difference) ────────────────── */
 .cursor {
@@ -150,6 +140,30 @@ a { color: inherit; text-decoration: none; }
   transition: opacity 0.3s;
 }
 .nav-links a:hover, .nav-links a.active { opacity: 1; }
+
+/* Hamburger button — hidden on desktop */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 110;
+  flex-direction: column;
+  gap: 5px;
+}
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+.nav-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
 /* Vertical email (fixed right side, desktop only) */
 .side-email {
@@ -515,62 +529,8 @@ a { color: inherit; text-decoration: none; }
   transform: scale(1);
 }
 
-/* ── Certifications ───────────────────────────────────────────── */
-.certs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
-  margin-top: 32px;
-}
-.cert-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  transition: all 0.3s;
-}
-.cert-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-.cert-icon {
-  width: 40px; height: 40px;
-  background: var(--accent-dim);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 18px;
-}
-.cert-info { flex: 1; }
-.cert-org {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-.cert-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-.cert-year { font-size: 11px; color: var(--text-muted); }
-
-/* Cert hover preview */
-.cert-preview {
-  position: fixed;
-  pointer-events: none;
-  z-index: 200;
-  max-width: 400px;
-  border-radius: 8px;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.3s, transform 0.3s;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-}
-.cert-preview.visible { opacity: 1; transform: scale(1); }
+/* ── Certifications — reuses .project-row styles ──────────────── */
+.cert-row { cursor: default; }
 
 /* ── Contact ──────────────────────────────────────────────────── */
 .contact-section {
@@ -666,8 +626,33 @@ a { color: inherit; text-decoration: none; }
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .nav { padding: 16px 24px; }
-  .nav-links { gap: 14px; }
-  .nav-links a { font-size: 10px; letter-spacing: 1px; }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    position: fixed;
+    top: 0; right: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(12, 12, 12, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 105;
+  }
+  .nav-links.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .nav-links a {
+    font-size: 18px;
+    letter-spacing: 3px;
+    opacity: 0.7;
+  }
+  .nav-links a:hover { opacity: 1; }
   .hero { padding: 100px 24px 60px; }
   .hero-stats { gap: 28px; }
   .stat-num { font-size: 28px; }
