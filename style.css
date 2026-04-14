@@ -272,14 +272,12 @@ a { color: inherit; text-decoration: none; }
 .btn-ghost:hover { border-color: var(--text); }
 
 .scroll-hint {
-  position: absolute;
-  bottom: 40px;
-  left: 48px;
+  margin-top: 40px;
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 2px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
 }
