@@ -232,6 +232,15 @@ certPreview.className = 'cert-preview-fixed';
 document.body.appendChild(certPreview);
 
 let activeCertRow = null;
+let showTimeout = null;
+let hideTimeout = null;
+
+function hideCertPreview() {
+  activeCertRow = null;
+  clearTimeout(showTimeout);
+  clearTimeout(hideTimeout);
+  certPreview.classList.remove('visible');
+}
 
 document.querySelectorAll('.cert-row[data-cert-image]').forEach(row => {
   const src = row.getAttribute('data-cert-image');
@@ -239,11 +248,15 @@ document.querySelectorAll('.cert-row[data-cert-image]').forEach(row => {
 
   row.addEventListener('mouseenter', () => {
     activeCertRow = row;
-    // If already showing a different image, crossfade
+    clearTimeout(hideTimeout);
+    clearTimeout(showTimeout);
+
     if (certPreview.src !== new URL(src, location.href).href) {
       certPreview.style.transition = 'opacity 0.15s ease';
       certPreview.classList.remove('visible');
-      setTimeout(() => {
+      showTimeout = setTimeout(() => {
+        // Only show if the user is still hovering THIS row
+        if (activeCertRow !== row) return;
         certPreview.src = src;
         certPreview.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
         certPreview.classList.add('visible');
@@ -256,13 +269,27 @@ document.querySelectorAll('.cert-row[data-cert-image]').forEach(row => {
   row.addEventListener('mouseleave', () => {
     if (activeCertRow === row) {
       activeCertRow = null;
-      // Small delay so crossfade works when moving between cert rows
-      setTimeout(() => {
+      clearTimeout(showTimeout);
+      hideTimeout = setTimeout(() => {
         if (!activeCertRow) certPreview.classList.remove('visible');
       }, 50);
     }
   });
 });
+
+// Hide preview when cursor leaves the cert section entirely (handles fast scrolls)
+document.addEventListener('mousemove', (e) => {
+  if (!activeCertRow) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el || !el.closest('.cert-row[data-cert-image]')) {
+    hideCertPreview();
+  }
+});
+
+// Hide on scroll — mouse doesn't emit enter/leave events during scroll
+window.addEventListener('scroll', () => {
+  if (activeCertRow) hideCertPreview();
+}, { passive: true });
 
 // ── Mobile Nav Toggle ────────────────────────────────────────────
 const navToggle = document.getElementById('navToggle');
