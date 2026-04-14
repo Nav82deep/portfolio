@@ -226,23 +226,41 @@ document.querySelectorAll('.project-row[data-image]').forEach(row => {
   });
 });
 
-// ── Certificate Hover Preview (follows cursor, same as project hover) ────
+// ── Certificate Hover Preview (fixed right side, smooth crossfade) ───
 const certPreview = document.createElement('img');
-certPreview.className = 'project-hover-img';
+certPreview.className = 'cert-preview-fixed';
 document.body.appendChild(certPreview);
+
+let activeCertRow = null;
 
 document.querySelectorAll('.cert-row[data-cert-image]').forEach(row => {
   const src = row.getAttribute('data-cert-image');
   if (!src) return;
 
   row.addEventListener('mouseenter', () => {
-    certPreview.src = src;
-    certPreview.classList.add('visible');
+    activeCertRow = row;
+    // If already showing a different image, crossfade
+    if (certPreview.src !== new URL(src, location.href).href) {
+      certPreview.style.transition = 'opacity 0.15s ease';
+      certPreview.classList.remove('visible');
+      setTimeout(() => {
+        certPreview.src = src;
+        certPreview.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        certPreview.classList.add('visible');
+      }, 150);
+    } else {
+      certPreview.classList.add('visible');
+    }
   });
-  row.addEventListener('mouseleave', () => certPreview.classList.remove('visible'));
-  row.addEventListener('mousemove', (e) => {
-    certPreview.style.left = (e.clientX + 24) + 'px';
-    certPreview.style.top = (e.clientY - 110) + 'px';
+
+  row.addEventListener('mouseleave', () => {
+    if (activeCertRow === row) {
+      activeCertRow = null;
+      // Small delay so crossfade works when moving between cert rows
+      setTimeout(() => {
+        if (!activeCertRow) certPreview.classList.remove('visible');
+      }, 50);
+    }
   });
 });
 
